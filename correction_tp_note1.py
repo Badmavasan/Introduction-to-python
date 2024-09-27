@@ -1,0 +1,146 @@
+"""
+Nom :
+Prenom :
+Contexte : Système de gestion d'un réseau de transports urbains
+
+Dans ce contexte, vous êtes responsable du développement d'un système de gestion d'un réseau de transports urbains
+dans une grande métropole. Ce réseau comprend différents types de véhicules (bus, tramways, métros), chaque véhicule
+ayant des trajets, des horaires, et des passagers à gérer. Vous devez écrire des fonctions pour organiser, simuler et
+gérer ces aspects complexes du réseau.
+1. Fonction : Gestion des trajets de véhicules
+
+Description de la tâche :
+Écrivez une fonction gerer_trajets(liste_vehicules) qui prend en entrée une liste de dictionnaires représentant des
+véhicules du réseau de transport. Chaque véhicule a les informations suivantes :
+
+    type_vehicule (par exemple, "bus", "tramway", "métro").
+    capacite (nombre de passagers que le véhicule peut transporter).
+    trajets (une liste de trajets, chaque trajet étant un tuple de la forme (station_depart, station_arrivee, duree)).
+
+La fonction doit classer les véhicules selon les critères suivants :
+
+    En premier, par leur type (les bus, puis les tramways, puis les métros).
+    Ensuite, par leur capacité (en ordre décroissant).
+    Enfin, par la durée totale des trajets (somme des durées de tous les trajets).
+
+La fonction retourne une liste de véhicules triés.
+"""
+
+def gerer_trajets(liste_vehicules):
+
+    # Calculer la durée totale des trajets pour chaque véhicule
+    for vehicule in liste_vehicules:
+        duree_totale = 0
+        for trajet in vehicule['trajets']:
+            duree_totale += trajet[2]  # Ajouter la durée de chaque trajet à la somme totale
+        vehicule['duree_totale'] = duree_totale
+
+    # tri_par_type
+    tri_type = []
+    for type_vehicule in ['bus', 'métro', 'tramway']:
+        for vehicule in liste_vehicules:
+            if vehicule['type_vehicule'] == type_vehicule:
+                tri_type.append(vehicule)
+
+    # Trier les véhicules du même type par capacité décroissante
+    tri_capacite = []
+    while tri_type:
+        # Trouver le véhicule avec la plus grande capacité
+        vehicule_max_capacite = tri_type[0]
+        for vehicule in tri_type:
+            if vehicule['capacite'] > vehicule_max_capacite['capacite']:
+                vehicule_max_capacite = vehicule
+        tri_capacite.append(vehicule_max_capacite)
+        tri_type.remove(vehicule_max_capacite)
+
+    # Trier les véhicules du même type et de la même capacité par durée totale des trajets
+    tri_duree = []
+    while tri_capacite:
+        # Trouver le véhicule avec la plus petite durée totale
+        vehicule_min_duree = tri_capacite[0]
+        for vehicule in tri_capacite:
+            if vehicule['duree_totale'] < vehicule_min_duree['duree_totale']:
+                vehicule_min_duree = vehicule
+        tri_duree.append(vehicule_min_duree)
+        tri_capacite.remove(vehicule_min_duree)
+
+    # Supprimer la clé 'duree_totale' avant de retourner la liste triée
+    #for vehicule in tri_duree:
+        #del vehicule['duree_totale']
+
+    return tri_duree
+
+"""
+2. Fonction : Simulation de la capacité des véhicules
+
+Description de la tâche :
+Écrivez une fonction simuler_capacite(vehicule, passagers) qui simule la gestion des passagers pour un véhicule 
+spécifique. La fonction prend en entrée un dictionnaire représentant un véhicule et un nombre de passagers qui tentent 
+de monter à bord. Le véhicule a les informations suivantes :
+
+    type_vehicule.
+    capacite.
+    passagers_actuels (le nombre actuel de passagers à bord).
+
+La fonction doit gérer les conditions suivantes :
+
+    - Si le nombre de passagers actuels est inférieur à la capacité, ajoutez les nouveaux passagers à bord jusqu’à ce 
+    que le véhicule soit plein.
+    - Si le nombre de passagers dépasse la capacité, seuls les passagers pouvant entrer dans le véhicule sont acceptés.
+    - La fonction retourne le nombre de passagers refusés (ceux qui n’ont pas pu monter).
+"""
+
+def simuler_capacite(vehicule, passagers):
+    for passagers in vehicule:
+        if vehicule['capacite']  >= ('passagers_acctuel')+passagers:
+            return 0
+        elif vehicule['capacite'] < ('passagers_acctuel')+passagers:
+           passagers_rentre=['capacite']-('passagers_acctuel')
+        return passagers_rentre- passagers
+
+
+"""
+3. Fonction : Mise à jour des horaires des trajets
+
+Description de la tâche :
+Écrivez une fonction mettre_a_jour_horaires(trajets, retard) qui met à jour les horaires des trajets pour un véhicule 
+donné. La fonction prend en entrée une liste de trajets (chaque trajet étant un tuple de la forme (station_depart, 
+station_arrivee, heure_depart, heure_arrivee)) et un nombre représentant le retard en minutes.
+
+La fonction doit ajouter le retard à l'heure de départ et à l'heure d'arrivée de chaque trajet. La fonction retourne la 
+nouvelle liste de trajets avec les horaires mis à jour.
+"""
+
+def mettre_a_jour_horaires(trajets, retard):
+    trajets_mis_a_jour = []
+    for element in trajets:
+        nouvelle_trajet = (element[0], element[1], element[2] + retard, element[3] + retard)
+        trajets_mis_a_jour.append(nouvelle_trajet)
+
+    return trajets_mis_a_jour
+
+
+# Exemple de véhicules (Données pour la fonction 1)
+vehicules = [
+    {'type_vehicule': 'bus', 'capacite': 50, 'trajets': [('A', 'B', 20), ('B', 'C', 30)]},
+    {'type_vehicule': 'tramway', 'capacite': 120, 'trajets': [('D', 'E', 25), ('E', 'F', 35)]},
+    {'type_vehicule': 'métro', 'capacite': 200, 'trajets': [('G', 'H', 15), ('H', 'I', 20)]},
+]
+
+# Tester fonction 1
+# print(gerer_trajets(vehicules))
+
+# Exemple d'un véhicule et simulation pour la fonction 2
+vehicule = {'type_vehicule': 'bus', 'capacite': 50, 'passagers_actuels': 40}
+passagers = 20
+
+# Tester fonction 2
+print(simuler_capacite(vehicule, passagers))
+
+# Exemple de trajets et mise à jour pour la fonction 3
+trajets = [('A', 'B', 800, 830), ('B', 'C', 840, 900), ('C', 'D', 910, 940)]
+retard = 10
+
+# Tester fonction 3
+print(mettre_a_jour_horaires(trajets, retard))
+
